@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const photoSchema = new Schema({
     title: String,
-    path: String
+    url  : String
 });
 
 const model = mongoose.model("Photo", photoSchema);
