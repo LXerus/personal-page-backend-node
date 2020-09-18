@@ -1,4 +1,3 @@
-const { Model } = require("mongoose");
 const PhotoModel = require("./PhotoModel");
 
 function addPhoto(photo) {
@@ -12,8 +11,8 @@ async function getPhoto(photoName) {
 
   if (photoName) {
     filter = { title: new RegExp(`/${photoName}/`, "i") };
-
-    photos = await PhotoModel.find(filter);
+    console.log(filter);
+    photos = await PhotoModel.find(photoName);
   } else {
     photos = await PhotoModel.find({});
   }

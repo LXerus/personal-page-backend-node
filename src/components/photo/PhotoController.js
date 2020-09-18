@@ -6,12 +6,10 @@ const port = 3000;
 
 function getPhoto(photoName) {
   return new Promise((resolve, reject) => {
-    if(photoName){
+    if (photoName !== null || photoName !== undefined) {
       resolve(PhotoStorage.getPhoto(photoName));
-    }else{
-      reject("Invalid data");
     }
-    
+    reject("Invalid data");
   });
 }
 
@@ -34,5 +32,5 @@ function addPhoto(filename, image) {
 
 module.exports = {
   addPhoto,
-  getPhoto
+  getPhoto,
 };

@@ -3,10 +3,10 @@ const response = require("../../network/response");
 const PhotoController = require("./PhotoController");
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  const filteredData = req.params.title || "";
+router.get("/:title", (req, res) => {
+  const filteredData = req.params.title;
   console.log("data", filteredData);
-  PhotoController.getPhoto("Avatar2")
+  PhotoController.getPhoto(filteredData)
     .then((data) => {
       response.success(req, res, data, 200);
     })

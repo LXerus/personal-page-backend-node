@@ -10,7 +10,7 @@ dataBase.connect(
 );
 app.use(multerConfig)
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use("/app", express.static("./public/static"));
 router(app);
 
