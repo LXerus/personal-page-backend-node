@@ -4,47 +4,34 @@ const path = require("path");
 const host = "localhost";
 const port = 3000;
 
-const storage = multer.diskStorage({
-  destination: "public/images/",
-  filename: (req, file, callback) => {
-    callback(null, Date.now() + path.extname(file.originalname));
-  },
-});
-
-const upload = multer({
-  storage: storage,
-  fileFilter: (req, file, callback) => {
-    if (!file.originalname.match(/\.(png|jpg|jpeg|jpng)$/)) {
-      return callback(
-        "El archivo tiene que ser una de las siguientes extensiones: png, jpg, jpeg, jpng"
-      );
-    }
-    callback(null, true);
-  },
-});
-
-function addPhoto(title, image) {
+function getPhoto(photoName) {
   return new Promise((resolve, reject) => {
-    if (!title || !image) {
-      reject("Invalid file data, image or tittle missing");
+    if (photoName) {
+      resolve(PhotoStorage.getPhoto(photoName));
+    } else {
+      reject("Invalid data");
+    }
+  });
+}
+
+function addPhoto(filename, image) {
+  return new Promise((resolve, reject) => {
+    if (!filename || !image) {
+      reject("Invalid file data, title or file missing");
     }
 
-    const newPhoto = {
-      title: title,
-      path: `http:${host}/${port}/${storage.destination}/${image.originalname}`,
-    };
-
+    const url = `http://${host}:${port}/${path.join(
+      __dirname,
+      "public/images/"
+    )}/${image.originalname}`;
+    const title = filename.substr(0, filename.lastIndexOf(".")) || filename;
+    const newPhoto = { title: title, url: url };
     PhotoStorage.addPhoto(newPhoto);
     resolve(newPhoto);
   });
 }
 
-function getPhoto(photoName) {
-    
-}
 module.exports = {
-  storage,
-  upload,
   addPhoto,
   getPhoto,
 };

@@ -11,8 +11,7 @@ async function getPhoto(photoName) {
   let photos;
 
   if (photoName) {
-    filter = { name: new RegExp(`/${photoName}/`, "i") };
-
+    filter = { title: {$regex: `${photoName}`}};
     photos = await PhotoModel.find(filter);
   } else {
     photos = await PhotoModel.find({});
