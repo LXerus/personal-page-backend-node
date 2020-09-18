@@ -6,32 +6,56 @@ const port = 3000;
 
 function getPhoto(photoName) {
   return new Promise((resolve, reject) => {
-    if (photoName) {
+    if (photoName !== null || photoName !== undefined) {
       resolve(PhotoStorage.getPhoto(photoName));
-    } else {
-      reject("Invalid data");
     }
+    reject("Invalid data");
   });
 }
 
-function addPhoto(filename, image) {
+function addPhoto(title, photo) {
   return new Promise((resolve, reject) => {
-    if (!filename || !image) {
+    if (!title || !photo) {
       reject("Invalid file data, title or file missing");
     }
 
     const url = `http://${host}:${port}/${path.join(
       __dirname,
       "public/images/"
-    )}/${image.originalname}`;
-    const title = filename.substr(0, filename.lastIndexOf(".")) || filename;
+    )}/${photo.originalname}`;
     const newPhoto = { title: title, url: url };
     PhotoStorage.addPhoto(newPhoto);
     resolve(newPhoto);
   });
 }
 
+function updatePhoto(photoId, title, photo) {
+  return new Promise((resolve, reject) => {
+    if (!photoId || !photo) {
+      reject("Invalid photo data, id or new data missing");
+    }
+
+    const url = `http://${host}:${port}/${path.join(
+      __dirname,
+      "public/images/"
+    )}/${image.originalname}`;
+    const newPhoto = { title: title, url: url };
+    resolve(PhotoStorage.updatePhoto(photoId, newPhoto));
+  });
+}
+
+function deletePhoto(photoId) {
+  return new Promise((resolve, reject) => {
+    if (!photoId) {
+      reject("Invalid data, Id missing");
+    }
+    resolve(PhotoStorage.deletePhoto(photoId));
+  });
+}
+
 module.exports = {
   addPhoto,
   getPhoto,
+  updatePhoto,
+  deletePhoto,
 };

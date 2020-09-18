@@ -1,4 +1,3 @@
-const { Model } = require("mongoose");
 const PhotoModel = require("./PhotoModel");
 
 function addPhoto(photo) {
@@ -6,33 +5,43 @@ function addPhoto(photo) {
   newPhoto.save();
 }
 
-async function getPhoto(photoName) {
-  let filter = {};
-  let photos;
+function getPhoto(photoName) {
+  return new Promise(async (resolve, reject) => {
+    let photos;
 
-  if (photoName) {
-    filter = { title: {$regex: `${photoName}`}};
-    photos = await PhotoModel.find(filter);
-  } else {
-    photos = await PhotoModel.find({});
-  }
+    if (photoName) {
+      let filter = { title: new RegExp(photoName, "i") };
+      photos = await PhotoModel.find(filter).exec();
+    } else {
+      photos = await PhotoModel.find({}).exec();
+    }
 
-  return photos;
+    if (photos.length === 0) {
+      reject("No results were found");
+    }
+
+    resolve(photos);
+  });
 }
 
-async function updatePhoto(photoId, photo) {
-    const existingPhoto = await PhotoModel.findOne({_id: photoId});
-    existingPhoto.photo = photo;
-    return await existingPhoto.save();
+function updatePhoto(photoId, photo) {
+  return new Promise(async (resolve, reject) => {
+    const existingPhoto = await PhotoModel.findOne({ _id: photoId });
+    if (photoId) {
+      existingPhoto.photo = photo;
+      resolve(existingPhoto.save());
+    }
+    reject("Could not find original photo");
+  });
 }
 
 async function deletePhoto(photoId) {
-    return await PhotoModel.deleteOne({ _id: photoId });
+  return await PhotoModel.deleteOne({ _id: photoId });
 }
 
 module.exports = {
-    addPhoto,
-    getPhoto,
-    updatePhoto,
-    deletePhoto
+  addPhoto,
+  getPhoto,
+  updatePhoto,
+  deletePhoto,
 };
