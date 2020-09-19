@@ -3,12 +3,11 @@ const app = express();
 const bodyParser = require("body-parser");
 const router = require("./network/routes");
 const dataBase = require("./DB/dbConnection");
-const multerConfig = require("./config/multer_config");
+const configMulter = require("./config/configMulter");
+const configVars = require("./config/configVars");
 
-dataBase.connect(
-    "mongodb+srv://db_standard_user:ZbOjs7EV4zuNeKfN@cluster0.cttdc.mongodb.net/alexa-portfolio"
-);
-app.use(multerConfig)
+dataBase.connect(configVars.dbUri);
+app.use(configMulter)
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use("/app", express.static("./public/static"));

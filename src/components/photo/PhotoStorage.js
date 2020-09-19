@@ -5,6 +5,16 @@ function addPhoto(photo) {
   newPhoto.save();
 }
 
+async function getPhotoByID(photoId) {
+  const existingPhoto =  await PhotoModel.findById(photoId);
+ 
+  if (existingPhoto) {
+    return existingPhoto;
+  }
+
+  return 404;
+}
+
 function getPhoto(photoName) {
   return new Promise(async (resolve, reject) => {
     let photos;
@@ -26,20 +36,20 @@ function getPhoto(photoName) {
 
 function updatePhoto(photoId, photo) {
   return new Promise(async (resolve, reject) => {
-    const existingPhoto = await PhotoModel.findOne({ _id: photoId });
-    if (photoId) {
-      existingPhoto.photo = photo;
-      resolve(existingPhoto.save());
+    if (photoId) {      
+      const existingPhoto = await PhotoModel.findByIdAndUpdate(photoId, photo, {new: true});
+      resolve(existingPhoto);
     }
     reject("Could not find original photo");
   });
 }
 
 async function deletePhoto(photoId) {
-  return await PhotoModel.deleteOne({ _id: photoId });
+  return await PhotoModel.findByIdAndDelete({ _id: photoId });
 }
 
 module.exports = {
+  getPhotoByID,
   addPhoto,
   getPhoto,
   updatePhoto,

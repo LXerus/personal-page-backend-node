@@ -1,8 +1,7 @@
 const PhotoStorage = require("./PhotoStorage");
-const multer = require("multer");
 const path = require("path");
-const host = "localhost";
-const port = 3000;
+const configVars = require("../../config/configVars");
+const fs = require("fs");
 
 function getPhoto(photoName) {
   return new Promise((resolve, reject) => {
@@ -19,7 +18,7 @@ function addPhoto(title, photo) {
       reject("Invalid file data, title or file missing");
     }
 
-    const url = `http://${host}:${port}/${path.join(
+    const url = `${configVars.host}:${configVars.port}/${path.join(
       __dirname,
       "public/images/"
     )}/${photo.originalname}`;
@@ -30,27 +29,41 @@ function addPhoto(title, photo) {
 }
 
 function updatePhoto(photoId, title, photo) {
-  return new Promise((resolve, reject) => {
-    if (!photoId || !photo) {
+  return new Promise(async (resolve, reject) => {
+    if (!photoId || title === "" || !photo) {
       reject("Invalid photo data, id or new data missing");
     }
 
-    const url = `http://${host}:${port}/${path.join(
+    await __removeOldPhoto(photoId);
+
+    const url = `${configVars.host}:${configVars.port}/${path.join(
       __dirname,
       "public/images/"
-    )}/${image.originalname}`;
+    )}/${photo.originalname}`;
     const newPhoto = { title: title, url: url };
     resolve(PhotoStorage.updatePhoto(photoId, newPhoto));
   });
 }
 
 function deletePhoto(photoId) {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     if (!photoId) {
       reject("Invalid data, Id missing");
     }
+
+    await __removeOldPhoto(photoId);
     resolve(PhotoStorage.deletePhoto(photoId));
   });
+}
+
+async function __removeOldPhoto(photoId) {
+  let existingPhoto = await PhotoStorage.getPhotoByID(photoId);
+    let oldFile = existingPhoto.url.match(/[^/\\&\?]+\.\w{3,4}(?=([\?&].*$|$))/);
+    const oldPath = path.join (__dirname ,`../../public/images/${oldFile[0]}`);
+    await fs.unlink(oldPath, (error) =>{
+      console.error(error);
+      return
+    });
 }
 
 module.exports = {
