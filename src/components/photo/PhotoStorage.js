@@ -1,13 +1,8 @@
-const PhotoModel = require("./PhotoModel");
-
-function addPhoto(photo) {
-  const newPhoto = new PhotoModel(photo);
-  newPhoto.save();
-}
+const PhotoModel = require("./photoModel");
 
 async function getPhotoByID(photoId) {
-  const existingPhoto =  await PhotoModel.findById(photoId);
- 
+  const existingPhoto = await PhotoModel.findById(photoId);
+
   if (existingPhoto) {
     return existingPhoto;
   }
@@ -27,20 +22,27 @@ function getPhoto(photoName) {
     }
 
     if (photos.length === 0) {
-      reject("No results were found");
+      reject("No matching results");
     }
 
     resolve(photos);
   });
 }
 
+function addPhoto(photo) {
+  const newPhoto = new PhotoModel(photo);
+  newPhoto.save();
+}
+
 function updatePhoto(photoId, photo) {
   return new Promise(async (resolve, reject) => {
-    if (photoId) {      
-      const existingPhoto = await PhotoModel.findByIdAndUpdate(photoId, photo, {new: true});
-      resolve(existingPhoto);
+    if (photoId) {
+      const updatedPhoto = await PhotoModel.findByIdAndUpdate(photoId, photo, {
+        new: true,
+      });
+      resolve(updatedPhoto);
     }
-    reject("Could not find original photo");
+    reject("Could not update photo");
   });
 }
 
@@ -50,8 +52,8 @@ async function deletePhoto(photoId) {
 
 module.exports = {
   getPhotoByID,
-  addPhoto,
   getPhoto,
+  addPhoto,
   updatePhoto,
   deletePhoto,
 };

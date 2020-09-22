@@ -1,4 +1,4 @@
-const PhotoStorage = require("./PhotoStorage");
+const PhotoStorage = require("./photoStorage");
 const path = require("path");
 const configVars = require("../../config/configVars");
 const fs = require("fs");
@@ -15,7 +15,7 @@ function getPhoto(photoName) {
 function addPhoto(title, photo) {
   return new Promise((resolve, reject) => {
     if (!title || !photo) {
-      reject("Invalid file data, title or file missing");
+      reject("Invalid input data");
     }
 
     const url = `${configVars.host}:${configVars.port}/${path.join(
@@ -34,7 +34,9 @@ function updatePhoto(photoId, title, photo) {
       reject("Invalid photo data, id or new data missing");
     }
 
-    await __removeOldPhoto(photoId);
+    if(await __removeOldPhoto(photoId) === 404){
+      reject("[photo] 404 Not found");
+    }
 
     const url = `${configVars.host}:${configVars.port}/${path.join(
       __dirname,
@@ -51,19 +53,27 @@ function deletePhoto(photoId) {
       reject("Invalid data, Id missing");
     }
 
-    await __removeOldPhoto(photoId);
+    if(await __removeOldPhoto(photoId) === 404){
+      reject("[photo] 404 Not found");
+    }
+
     resolve(PhotoStorage.deletePhoto(photoId));
   });
 }
 
 async function __removeOldPhoto(photoId) {
   let existingPhoto = await PhotoStorage.getPhotoByID(photoId);
-    let oldFile = existingPhoto.url.match(/[^/\\&\?]+\.\w{3,4}(?=([\?&].*$|$))/);
-    const oldPath = path.join (__dirname ,`../../public/images/${oldFile[0]}`);
-    await fs.unlink(oldPath, (error) =>{
+  if (existingPhoto !== 404) {
+    let oldFile = existingPhoto.url.match(
+      /[^/\\&\?]+\.\w{3,4}(?=([\?&].*$|$))/
+    );
+    const oldPath = path.join(__dirname, `../../public/images/${oldFile[0]}`);
+    await fs.unlink(oldPath, (error) => {
       console.error(error);
-      return
+      return;
     });
+  }
+  return 404;
 }
 
 module.exports = {
