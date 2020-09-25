@@ -1,7 +1,7 @@
 const { rejects } = require("assert");
 const { resolve } = require("path");
 const skillStorage = require("./skillStorage");
-const photoController = require("../photo/photoController");
+const photoStorage = require("../photo/PhotoStorage");
 const configVars = require("../../config/configVars");
 const bson = require("bson");
 const fs = require("fs");
@@ -30,43 +30,34 @@ function addSkill(title, text, image) {
 
   const newPhoto = { _id: imageId, title: imgage.filename, url: imageUrl };
   const newSkill = { title: title, text: text, image: imageId };
-  await photoController.addPhoto(newPhoto);
-  await skillStorage.addSkill(newSkill);
+  photoStorage.addPhoto(newPhoto);
+  skillStorage.addSkill(newSkill);
   resolve(newSkill);
 }
 
-function updateSkill(skillId, title, text, image = null) {
-  return new Promise(async (resolve, reject) => {
-    if (!skillId || !title || !text) {
+function updateSkill(skillId, title, text, image) {
+  return new Promise(async (resolve, reject) =>{
+    if(!skillId || !title || !text || !image){
       reject("Invalid input data");
     }
 
     const existingSkill = await skillStorage.getSkillById(skillId);
-    let updatedSkill = {title: title, text: text};
-
-    if(image !== null){
-      await photoController.updatePhoto(existingSkill.image, image.filename, image);
-    }
-
-    await skillStorage.updateSkill(skillId, updatedSkill);
-    resolve(updatedSkill);
-  });
-}
-
-function deleteSkill(skillId) {
-  return new Promise(async(resolve, reject)=>{
-    if(!skillId){
-      reject("Invalid input data");
-    }
+    const existingPhoto = await photoStorage.getPhotoByID(existingSkill.image);
     
-    resolve(skillStorage.deleteSkill(skillId));
   });
 }
 
-module.exports = {
-  getSkill,
-  addSkill,
-  updateSkill,
-  deleteSkill
+async function __removeOldPhoto(photoId) {
+  let existingPhoto = await PhotoStorage.getPhotoByID(photoId);
+  if (existingPhoto !== 404) {
+    let oldFile = existingPhoto.url.match(
+      /[^/\\&\?]+\.\w{3,4}(?=([\?&].*$|$))/
+    );
+    const oldPath = path.join(__dirname, `../../public/images/${oldFile[0]}`);
+    await fs.unlink(oldPath, (error) => {
+      console.error(error);
+      return error;
+    });
+  }
+  return 404;
 }
-
