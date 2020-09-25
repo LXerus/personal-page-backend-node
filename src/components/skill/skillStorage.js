@@ -2,6 +2,8 @@ const { resolve } = require("path");
 const { findByIdAndDelete } = require("../photo/photoModel");
 const SkillModel = require("./skillModel");
 
+
+
 async function getSkillById(skillId) {
   const existingSkill = SkillModel.findById(skillId);
 

@@ -1,6 +1,6 @@
 const PhotoStorage = require("./photoStorage");
-const path = require("path");
 const configVars = require("../../config/configVars");
+const path = require("path");
 const fs = require("fs");
 
 function getPhoto(photoName) {
