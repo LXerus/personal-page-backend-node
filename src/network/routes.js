@@ -1,4 +1,3 @@
-const express = require("express");
 const home = require("../public/pages/home/network");
 const photo = require("../components/photo/PhotoNetwork");
 const skill = require("../components/skill/skillNetwork")

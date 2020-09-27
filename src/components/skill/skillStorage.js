@@ -1,11 +1,7 @@
-const { resolve } = require("path");
-const { findByIdAndDelete } = require("../photo/photoModel");
-const SkillModel = require("./skillModel");
-
-
+const skillModel = require("./skillModel");
 
 async function getSkillById(skillId) {
-  const existingSkill = SkillModel.findById(skillId);
+  const existingSkill = skillModel.findById(skillId);
 
   if (existingSkill) {
     return existingSkill;
@@ -16,14 +12,8 @@ async function getSkillById(skillId) {
 
 function getSkill(photoTitle) {
   return new Promise(async (resolve, reject) => {
-    let skills;
-
-    if (photoTitle) {
-      let filter = { title: new RegExp(photoTitle, "i") };
-      skills = await SkillModel.find(filter);
-    } else {
-      skills = await SkillModel.find({});
-    }
+    let filter = { title: new RegExp(photoTitle, "i") };
+    let skills = await skillModel.find(filter).exec();
 
     if (skills.length === 0) {
       reject("No matching results");
@@ -34,14 +24,14 @@ function getSkill(photoTitle) {
 }
 
 function addSkill(skill) {
-    const newSkill = new SkillModel(skill);
+    const newSkill = new skillModel(skill);
     newSkill.save();
 }
 
 function updateSkill(skillId, skill) {
     return new Promise((resolve, reject)=>{
         if(skillId){
-            const updatedSkill = await SkillModel.findByIdAndUpdate(skillId, skill);
+            const updatedSkill = await skillModel.findByIdAndUpdate(skillId, skill);
             resolve(updatedSkill);
         }
 
@@ -52,7 +42,7 @@ function updateSkill(skillId, skill) {
 function deleteSkill(skillId) {
     return new Promise(async (resolve, reject)=>{
         if (skillId) {
-            const deletedPhoto = findByIdAndDelete(skillId);
+            const deletedPhoto = skillModel.findByIdAndDelete(skillId);
             resolve(deletedPhoto);
         }
 

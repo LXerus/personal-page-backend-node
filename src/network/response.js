@@ -11,8 +11,8 @@ const statusCode = {
   500: "Internal server error",
 };
 
-exports.success = (req, res, message, status = 200) => {
-  let statusMessage = "";
+exports.success = (req, res, status = 200, message = "") => {
+  let statusMessage = null;
   if (!message || message === "") {
     statusMessage = statusCode[status];
   }
@@ -23,7 +23,7 @@ exports.success = (req, res, message, status = 200) => {
   });
 };
 
-exports.error = (req, res, error, status = 500, message) => {
+exports.error = (req, res, error, status = 500, message = "") => {
   let statusMessage = "";
   if (!message || message === "") {
     statusMessage = statusCode[status];

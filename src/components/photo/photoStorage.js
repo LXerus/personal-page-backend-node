@@ -12,17 +12,11 @@ async function getPhotoByID(photoId) {
 
 function getPhoto(photoName) {
   return new Promise(async (resolve, reject) => {
-    let photos;
-
-    if (photoName) {
-      let filter = { title: new RegExp(photoName, "i") };
-      photos = await PhotoModel.find(filter).exec();
-    } else {
-      photos = await PhotoModel.find({}).exec();
-    }
+    let filter = { title: new RegExp(photoName, "i") };
+    let photos = await PhotoModel.find(filter).exec();
 
     if (photos.length === 0) {
-      reject("No matching results");
+      reject(404);
     }
 
     resolve(photos);

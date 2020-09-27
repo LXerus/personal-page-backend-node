@@ -5,7 +5,7 @@ const fs = require("fs");
 
 function getPhoto(photoName) {
   return new Promise((resolve, reject) => {
-    if (photoName !== null || photoName !== undefined) {
+    if (photoName !== null) {
       resolve(PhotoStorage.getPhoto(photoName));
     }
     reject("Invalid data");
@@ -21,17 +21,16 @@ function addPhoto(id = null, title, photo) {
     const url = `${configVars.host}:${configVars.port}/${path.join(
       __dirname,
       "public/images/"
-    )}/${photo.originalname}`;
+    )}/${Date.now() + photo.originalname}`;
     const newPhoto = {};
 
     if (id !== null) {
       newPhoto = { _id: id, title: title, url: url };
-
     } else {
       newPhoto = { title: title, url: url };
     }
-    PhotoStorage.addPhoto(newPhoto);
-    resolve(newPhoto);
+
+    resolve(PhotoStorage.addPhoto(newPhoto));
   });
 }
 
@@ -48,7 +47,7 @@ function updatePhoto(photoId, title, photo) {
     const url = `${configVars.host}:${configVars.port}/${path.join(
       __dirname,
       "public/images/"
-    )}/${photo.originalname}`;
+    )}/${Date.now() + photo.originalname}`;
     const newPhoto = { title: title, url: url };
     resolve(PhotoStorage.updatePhoto(photoId, newPhoto));
   });

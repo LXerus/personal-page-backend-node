@@ -7,6 +7,6 @@ const skillSchema = new Schema({
     image: {type: Schema.Types.ObjectId, ref: "Photo"}
 });
 
-const model = mongoose.model("Skill", skillSchema);
+const skillModel = mongoose.model("Skill", skillSchema);
 
-module.exports = model;
+module.exports = skillModel;

@@ -9,7 +9,7 @@ const storage = multer.diskStorage({
   },
 });
 
-const configMulter =  multer({
+const configMulterSingle =  multer({
   storage: storage,
   fileFilter: (req, file, callback) => {
     if (!file.originalname.match(/\.(png|jpg|jpeg)$/)) {
@@ -21,4 +21,18 @@ const configMulter =  multer({
   },
 }).single("image");
 
-module.exports = configMulter;
+const configMulterMulti =  multer({
+  storage: storage,
+  fileFilter: (req, file, callback) => {
+    if (!file.originalname.match(/\.(png|jpg|jpeg)$/)) {
+      return callback(
+        "El archivo tiene que ser una de las siguientes extensiones: png, jpg, jpeg"
+      );
+    }
+    callback(null, true);
+  },
+}).array("images");
+
+
+
+module.exports = {configMulterSingle, configMulterMulti};

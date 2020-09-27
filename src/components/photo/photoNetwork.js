@@ -4,46 +4,47 @@ const response = require("../../network/response");
 const photoController = require("./photoController");
 
 router.get("/", (req, res) => {
-  photoController.getPhoto(req.query.title)
+  photoController
+    .getPhoto(req.query.title || "")
     .then((data) => {
-      response.success(req, res, data, 200);
+      response.success(req, res, 200, data);
     })
     .catch((error) => {
-      response.error(req, res, error, "Could not find photo", 404);
+      response.error(req, res, error, 404);
     });
 });
 
 router.post("/", (req, res) => {
-  photoController.addPhoto(req.query.title, req.file)
+  photoController
+    .addPhoto(req.query.title || null, req.file || null)
     .then(() => {
-      response.success(req, res, "Photo upload succesful", 201);
+      response.success(req, res, 201);
     })
     .catch((error) => {
-      response.error(req, res, error, "Photo upload failed", 500);
+      response.error(req, res, error, 500);
     });
 });
 
-router.patch("/", (req, res) => {
-  photoController.updatePhoto(
-    req.query.id,
-    req.query.title || "",
-    req.file || null
-  )
-    .then((data) => {
-      response.success(req, res, `${data} update succesful`, 201);
+router.patch("/:id", (req, res) => {
+  photoController
+    .updatePhoto(req.params.id || null, req.query.title || "", req.file || null)
+    .then(() => {
+      
+      response.success(req, res, 204);
     })
     .catch((error) => {
-      response.error(req, res, error, "Photo update failed", 500);
+      response.error(req, res, error, 500);
     });
 });
 
 router.delete("/:id", (req, res) => {
-  photoController.deletePhoto(req.params.id)
-    .then((data) => {
-      response.success(req, res, `${data} deleted sucesfully`, 204);
+  photoController
+    .deletePhoto(req.params.id || null)
+    .then(() => {
+      response.success(req, res, 204);
     })
     .catch((error) => {
-      response.error(req, res, error, "Photo delete failed", 500);
+      response.error(req, res, error, 500);
     });
 });
 
