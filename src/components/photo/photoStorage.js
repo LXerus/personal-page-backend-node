@@ -25,6 +25,7 @@ function getPhoto(photoName) {
 
 function addPhoto(photo) {
   const newPhoto = new PhotoModel(photo);
+  console.log(newPhoto);
   newPhoto.save();
 }
 

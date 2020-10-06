@@ -23,11 +23,10 @@ function addSkill(title, text, image) {
     const imageUrl = `${configVars.host}:${configVars.port}/${path.join(
       __dirname,
       "public/images/"
-    )}/${Date.now() + photo.originalname}`;
+    )}/${photo.filename}`;
 
-    const newPhoto = { _id: imageId, title: imgage.filename, url: imageUrl };
     const newSkill = { title: title, text: text, image: imageId };
-    await photoController.addPhoto(newPhoto);
+    await photoController.addPhoto(image.filename, imageUrl, imageId);
     await skillStorage.addSkill(newSkill);
     resolve(newSkill);
   });

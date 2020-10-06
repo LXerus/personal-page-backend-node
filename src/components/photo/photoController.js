@@ -12,7 +12,7 @@ function getPhoto(photoName) {
   });
 }
 
-function addPhoto(id = null, title, photo) {
+function addPhoto(title, photo, id = null) {
   return new Promise((resolve, reject) => {
     if (!title || !photo) {
       reject("Invalid input data");
@@ -21,8 +21,8 @@ function addPhoto(id = null, title, photo) {
     const url = `${configVars.host}:${configVars.port}/${path.join(
       __dirname,
       "public/images/"
-    )}/${Date.now() + photo.originalname}`;
-    const newPhoto = {};
+    )}/${photo.filename}`;
+    let newPhoto = {};
 
     if (id !== null) {
       newPhoto = { _id: id, title: title, url: url };
@@ -47,7 +47,7 @@ function updatePhoto(photoId, title, photo) {
     const url = `${configVars.host}:${configVars.port}/${path.join(
       __dirname,
       "public/images/"
-    )}/${Date.now() + photo.originalname}`;
+    )}/${photo.filename}`;
     const newPhoto = { title: title, url: url };
     resolve(PhotoStorage.updatePhoto(photoId, newPhoto));
   });

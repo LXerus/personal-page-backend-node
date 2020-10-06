@@ -29,7 +29,7 @@ function addSkill(skill) {
 }
 
 function updateSkill(skillId, skill) {
-    return new Promise((resolve, reject)=>{
+    return new Promise(async(resolve, reject)=>{
         if(skillId){
             const updatedSkill = await skillModel.findByIdAndUpdate(skillId, skill);
             resolve(updatedSkill);
