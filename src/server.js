@@ -12,6 +12,6 @@ app.use("/app", express.static("./public/static"));
 config(app);
 router(app);
 
-app.listen(3000, () => {
+app.listen(process.env.PORT, () => {
   console.log(`app runing ${process.env.HOST}:${process.env.PORT}`);
 });
