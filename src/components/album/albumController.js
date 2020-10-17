@@ -27,7 +27,7 @@ function addAlbum(title, images = []) {
       const imageUrl = `${configVars.host}:${configVars.port}/${path.join(
         __dirname,
         "public/images/"
-      )}/${Date.now() + image.originalname}`;
+      )}/${photo.filename}`;
 
       image = {
         _id: imageId,

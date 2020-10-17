@@ -12,7 +12,7 @@ function getSkill(skillName) {
     reject("Invalid data");
   });
 }
-
+  
 function addSkill(title, text, image) {
   return new Promise(async (resolve, reject) => {
     if (!title || !text || !image) {
