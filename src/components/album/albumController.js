@@ -15,7 +15,7 @@ function getAlbums(albumName) {
 }
 
 function addAlbum(title, images = []) {
-  return new Promise(async(resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     let imageIds = [];
 
     if (!title) {
@@ -36,7 +36,7 @@ function addAlbum(title, images = []) {
       };
     });
 
-    images.forEach((image) => {
+    images.forEach(async (image) => {
       imageIds.push(image._id);
       await photoController.addPhoto(image.title, image.url, image._id);
     });
