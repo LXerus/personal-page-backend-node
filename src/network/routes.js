@@ -1,4 +1,4 @@
-const photo = require("../components/photo/PhotoNetwork");
+const photo = require("../components/photo/photoNetwork");
 const skill = require("../components/skill/skillNetwork");
 const album = require("../components/album/albumNetwork");
 const home = require("../Pages/home");
