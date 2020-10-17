@@ -1,3 +1,5 @@
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
@@ -11,5 +13,5 @@ config(app);
 router(app);
 
 app.listen(3000, () => {
-  console.log("app runing http://localhost:3000");
+  console.log(`app runing ${process.env.HOST}:${process.env.PORT}`);
 });
