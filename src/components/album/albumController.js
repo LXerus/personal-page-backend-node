@@ -1,7 +1,5 @@
 const albumStorage = require("./albumStorage");
 const photoController = require("../photo/photoController");
-const configVars = require("../../config/configVars");
-const bson = require("bson");
 const fs = require("fs");
 
 function getAlbums(albumName) {
@@ -15,24 +13,20 @@ function getAlbums(albumName) {
 }
 
 function addAlbum(title, images = []) {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     let imageIds = [];
 
     if (!title) {
       reject("Invalid input data");
     }
 
-    images.forEach((image) => {
-      const imageId = new bson.ObjectID();
-      const imageUrl = `${configVars.host}:${configVars.port}/${path.join(
-        __dirname,
-        "public/images/"
-      )}/${photo.filename}`;
+    images.forEach(async(image) => {
+      const addedImage = await photoController.addPhoto(image.originalname, image); 
 
       image = {
-        _id: imageId,
-        title: image.filename,
-        url: imageUrl,
+        _id: addedImage._id,
+        title: addedImage.title,
+        url: addedImage.url,
       };
     });
 

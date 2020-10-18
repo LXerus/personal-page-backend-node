@@ -1,3 +1,4 @@
+const { resolve } = require("path");
 const PhotoModel = require("./photoModel");
 
 async function getPhotoByID(photoId) {
@@ -23,10 +24,16 @@ function getPhoto(photoName) {
   });
 }
 
-function addPhoto(photo) {
-  const newPhoto = new PhotoModel(photo);
-  console.log(newPhoto);
-  newPhoto.save();
+function addPhoto(photo, returnPhoto = false) {
+  return new Promise((resolve, reject) => {
+    if (!photo) {
+      reject("could not add photo");
+    }
+
+    const newPhoto = new PhotoModel(photo);
+    newPhoto.save();
+    resolve(newPhoto);
+  });
 }
 
 function updatePhoto(photoId, photo) {

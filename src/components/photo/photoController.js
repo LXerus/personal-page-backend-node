@@ -34,6 +34,23 @@ function addPhoto(title, photo, id = null) {
   });
 }
 
+async function addAndReturnPhoto(title, photo) {
+  return new Promise((resolve, reject) => {
+    if (!title || !photo) {
+      reject("Invalid input data");
+    }
+
+    const url = `${configVars.host}:${configVars.port}/${path.join(
+      __dirname,
+      "public/images/"
+    )}/${photo.filename}`;
+
+    let newPhoto = { title: title, url: url };
+
+    resolve(PhotoStorage.addPhoto(newPhoto, true));
+  });
+}
+
 function updatePhoto(photoId, title, photo) {
   return new Promise(async (resolve, reject) => {
     if (!photoId || title === "" || !photo) {
@@ -84,6 +101,7 @@ async function __removeOldPhoto(photoId) {
 
 module.exports = {
   addPhoto,
+  addAndReturnPhoto,
   getPhoto,
   updatePhoto,
   deletePhoto,

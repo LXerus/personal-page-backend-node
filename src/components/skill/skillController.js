@@ -1,7 +1,6 @@
 const skillStorage = require("./skillStorage");
 const photoController = require("../photo/photoController");
 const configVars = require("../../config/configVars");
-const bson = require("bson");
 const fs = require("fs");
 
 function getSkill(skillName) {
@@ -17,16 +16,10 @@ function addSkill(title, text, image) {
   return new Promise(async (resolve, reject) => {
     if (!title || !text || !image) {
       reject("Invalid input data");
-    }
+    }    
 
-    const imageId = new bson.ObjectID();
-    const imageUrl = `${configVars.host}:${configVars.port}/${path.join(
-      __dirname,
-      "public/images/"
-    )}/${photo.filename}`;
-
-    const newSkill = { title: title, text: text, image: imageId };
-    await photoController.addPhoto(image.filename, imageUrl, imageId);
+    const addedImage = await photoController.addAndReturnPhoto(image.originalname, image);    
+    const newSkill = { title: title, text: text, image: addedImage._id };
     await skillStorage.addSkill(newSkill);
     resolve(newSkill);
   });
