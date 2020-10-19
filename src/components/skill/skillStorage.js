@@ -12,8 +12,14 @@ async function getSkillById(skillId) {
 
 function getSkill(photoTitle) {
   return new Promise(async (resolve, reject) => {
-    let filter = { title: new RegExp(photoTitle, "i") };
-    let skills = await skillModel.find(filter).exec();
+    let skills;
+
+    if (photoTitle || photoTitle !== "") {
+      let filter = { title: new RegExp(photoTitle, "i") };
+      skills = await skillModel.find(filter).exec();
+    } else {
+      skills = await skillModel.find({}).exec();
+    }
 
     if (skills.length === 0) {
       reject("No matching results");
@@ -24,30 +30,30 @@ function getSkill(photoTitle) {
 }
 
 function addSkill(skill) {
-    const newSkill = new skillModel(skill);
-    newSkill.save();
+  const newSkill = new skillModel(skill);
+  newSkill.save();
 }
 
 function updateSkill(skillId, skill) {
-    return new Promise(async(resolve, reject)=>{
-        if(skillId){
-            const updatedSkill = await skillModel.findByIdAndUpdate(skillId, skill);
-            resolve(updatedSkill);
-        }
+  return new Promise(async (resolve, reject) => {
+    if (skillId) {
+      const updatedSkill = await skillModel.findByIdAndUpdate(skillId, skill);
+      resolve(updatedSkill);
+    }
 
-        reject("Could not update photo");
-    });
+    reject("Could not update photo");
+  });
 }
 
 function deleteSkill(skillId) {
-    return new Promise(async (resolve, reject)=>{
-        if (skillId) {
-            const deletedPhoto = skillModel.findByIdAndDelete(skillId);
-            resolve(deletedPhoto);
-        }
+  return new Promise(async (resolve, reject) => {
+    if (skillId) {
+      const deletedPhoto = skillModel.findByIdAndDelete(skillId);
+      resolve(deletedPhoto);
+    }
 
-        reject("Could not delete photo");
-    });
+    reject("Could not delete photo");
+  });
 }
 
 module.exports = {

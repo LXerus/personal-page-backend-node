@@ -3,6 +3,16 @@ const configVars = require("../../config/configVars");
 const path = require("path");
 const fs = require("fs");
 
+function getPhotoById(id) {
+  return new Promise((resolve, reject) => {
+    if (!id) {
+      reject("Invalid input data");
+    }
+
+    resolve(PhotoStorage.getPhotoByID(id));
+  });
+}
+
 function getPhoto(photoName) {
   return new Promise((resolve, reject) => {
     if (photoName !== null) {
@@ -34,23 +44,6 @@ function addPhoto(title, photo, id = null) {
   });
 }
 
-async function addAndReturnPhoto(title, photo) {
-  return new Promise((resolve, reject) => {
-    if (!title || !photo) {
-      reject("Invalid input data");
-    }
-
-    const url = `${configVars.host}:${configVars.port}/${path.join(
-      __dirname,
-      "public/images/"
-    )}/${photo.filename}`;
-
-    let newPhoto = { title: title, url: url };
-
-    resolve(PhotoStorage.addPhoto(newPhoto, true));
-  });
-}
-
 function updatePhoto(photoId, title, photo) {
   return new Promise(async (resolve, reject) => {
     if (!photoId || title === "" || !photo) {
@@ -76,8 +69,10 @@ function deletePhoto(photoId) {
       reject("Invalid data, Id missing");
     }
 
-    if ((await __removeOldPhoto(photoId)) === 404) {
-      reject("[photo] 404 Not found");
+    try {
+      await __removeOldPhoto(photoId);
+    } catch (error) {
+      reject("[photo] 404 Not found", error);
     }
 
     resolve(PhotoStorage.deletePhoto(photoId));
@@ -93,15 +88,16 @@ async function __removeOldPhoto(photoId) {
     const oldPath = path.join(__dirname, `../../public/images/${oldFile[0]}`);
     await fs.unlink(oldPath, (error) => {
       console.error(error);
-      return;
+      return error;
     });
+    return 204;
   }
   return 404;
 }
 
 module.exports = {
   addPhoto,
-  addAndReturnPhoto,
+  getPhotoById,
   getPhoto,
   updatePhoto,
   deletePhoto,

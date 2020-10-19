@@ -1,24 +1,41 @@
 const skillStorage = require("./skillStorage");
 const photoController = require("../photo/photoController");
-const configVars = require("../../config/configVars");
 const fs = require("fs");
 
-function getSkill(skillName) {
-  return new Promise((resolve, reject) => {
-    if (skillName) {
-      resolve(skillStorage.getSkill(skillName));
+function getSkill(title) {
+  return new Promise(async (resolve, reject) => {
+    if (title || title === "") {
+      let skills = await skillStorage.getSkill(title);
+
+      let skillList = [];
+
+      for (let skill of skills) {
+        let skillPhoto = await photoController.getPhotoById(skill.image);
+        const skillDetails = {
+          id: skill._id,
+          title: skill.title,
+          text: skill.text,
+          image: skillPhoto,
+        };
+        skillList.push(skillDetails);
+      }
+
+      resolve(skillList);
     }
     reject("Invalid data");
   });
 }
-  
+
 function addSkill(title, text, image) {
   return new Promise(async (resolve, reject) => {
     if (!title || !text || !image) {
       reject("Invalid input data");
-    }    
+    }
 
-    const addedImage = await photoController.addAndReturnPhoto(image.originalname, image);    
+    const addedImage = await photoController.addPhoto(
+      image.originalname,
+      image
+    );
     const newSkill = { title: title, text: text, image: addedImage._id };
     await skillStorage.addSkill(newSkill);
     resolve(newSkill);
@@ -53,7 +70,10 @@ function deleteSkill(skillId) {
       reject("Invalid input data");
     }
 
-    resolve(skillStorage.deleteSkill(skillId));
+    let toBeDeleted = await skillStorage.getSkillById(skillId);
+    await skillStorage.deleteSkill(skillId);
+    await photoController.deletePhoto(toBeDeleted.image);
+    resolve("Skill deleted");
   });
 }
 

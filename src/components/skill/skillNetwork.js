@@ -17,8 +17,8 @@ router.get("/", (req, res) => {
 router.post("/", (req, res) => {
   skillController
     .addSkill(req.query.title || null, req.query.text || null, req.file || null)
-    .then(() => {
-      response.success(req, res, 201);
+    .then((data) => {
+      response.success(req, res, 201, data);
     })
     .catch((error) => {
       response.error(req, res, error, 500);
@@ -44,8 +44,8 @@ router.patch("/:id", (req, res) => {
 router.delete("/:id", (req, res) => {
   skillController
     .deleteSkill(req.params.id || null)
-    .then(() => {
-      response.success(req, res, 204);
+    .then((data) => {
+      response.success(req, res, 204, data);
     })
     .catch((error) => {
       response.error(req, res, error, 500);
