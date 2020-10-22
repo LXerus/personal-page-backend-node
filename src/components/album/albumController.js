@@ -12,28 +12,23 @@ function getAlbums(albumName) {
   });
 }
 
-function addAlbum(title, images = []) {
-  return new Promise((resolve, reject) => {
+ function addAlbum(title, images = []) {
+  return new Promise(async(resolve, reject) => {
     let imageIds = [];
+    let imageList = [];
 
     if (!title) {
       reject("Invalid input data");
     }
 
-    images.forEach(async(image) => {
+    for(let image  of images){
       const addedImage = await photoController.addPhoto(image.originalname, image); 
+      imageList.push(addedImage);
+    }
 
-      image = {
-        _id: addedImage._id,
-        title: addedImage.title,
-        url: addedImage.url,
-      };
-    });
-
-    images.forEach(async (image) => {
+    for(let image of imageList){
       imageIds.push(image._id);
-      await photoController.addPhoto(image.title, image.url, image._id);
-    });
+    }
 
     const newAlbum = { title: title, photos: imageIds };
 

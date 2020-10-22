@@ -24,9 +24,10 @@ function getAlbum(albumName) {
   });
 }
 
-function addAlbum(album) {
+async function addAlbum(album) {
     const newAlbum = new albumModel(album);
-    newAlbum.save();
+    await newAlbum.save();
+    return newAlbum;
 }
 
 function updateAlbum(albumId, album) {
