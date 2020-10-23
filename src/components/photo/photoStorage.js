@@ -48,8 +48,15 @@ function updatePhoto(photoId, photo) {
   });
 }
 
-async function deletePhoto(photoId) {
-  return await PhotoModel.findByIdAndDelete({ _id: photoId });
+function deletePhoto(photoId) {
+  return new Promise(async (resolve, reject) => {
+    if (photoId) {
+      const deletedPhoto = PhotoModel.remove({_id:photoId});
+      resolve(deletedPhoto);
+    }
+
+    reject("Could not delete photo");
+  });
 }
 
 module.exports = {

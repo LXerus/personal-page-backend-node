@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const response = require("../../network/response");
 const photoController = require("./photoController");
+const uploader = require("../../config/uploader");
 
 router.get("/", (req, res) => {
   photoController
@@ -14,7 +15,7 @@ router.get("/", (req, res) => {
     });
 });
 
-router.post("/", (req, res) => {
+router.post("/", uploader.single("image"), (req, res) => {
   photoController
     .addPhoto(req.query.title || null, req.file || null)
     .then(() => {
@@ -25,11 +26,10 @@ router.post("/", (req, res) => {
     });
 });
 
-router.patch("/:id", (req, res) => {
+router.patch("/:id", uploader.single("image"), (req, res) => {
   photoController
     .updatePhoto(req.params.id || null, req.query.title || "", req.file || null)
     .then(() => {
-      
       response.success(req, res, 204);
     })
     .catch((error) => {

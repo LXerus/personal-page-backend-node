@@ -4,7 +4,7 @@ const fs = require("fs");
 
 function getAlbums(albumName) {
   return new Promise((resolve, reject) => {
-    if (albumName) {
+    if (albumName || albumName === "") {
       resolve(albumStorage.getAlbum(albumName));
     }
 
@@ -12,8 +12,8 @@ function getAlbums(albumName) {
   });
 }
 
- function addAlbum(title, images = []) {
-  return new Promise(async(resolve, reject) => {
+function addAlbum(title, description, images) {
+  return new Promise(async (resolve, reject) => {
     let imageIds = [];
     let imageList = [];
 
@@ -21,28 +21,41 @@ function getAlbums(albumName) {
       reject("Invalid input data");
     }
 
-    for(let image  of images){
-      const addedImage = await photoController.addPhoto(image.originalname, image); 
+    for (let image of images) {
+      const addedImage = await photoController.addPhoto(
+        image.originalname,
+        image
+      );
       imageList.push(addedImage);
     }
 
-    for(let image of imageList){
+    for (let image of imageList) {
       imageIds.push(image._id);
     }
 
-    const newAlbum = { title: title, photos: imageIds };
+    const newAlbum = {
+      title: title,
+      description: description,
+      photos: imageIds,
+    };
 
     resolve(albumStorage.addAlbum(newAlbum));
   });
 }
 
-function updateAlbum(albumId, title, images) {
+function updateAlbum(albumId, title) {
   return new Promise((resolve, reject) => {
-    if (!albumId) {
+    if (!albumId || !title) {
       reject("Invalid input data");
     }
 
-    const newAlbum = { title: title, photos: images };
+    let newAlbum = {};
+
+    if (images) {
+      newAlbum = { title: title, photos: images };
+    } else {
+      newAlbum = { title: title };
+    }
 
     resolve(albumStorage.updateAlbum(albumId, newAlbum));
   });

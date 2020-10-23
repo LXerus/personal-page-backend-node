@@ -42,7 +42,7 @@ function updateAlbum(albumId, album) {
 }
 
 async function deleteAlbum(albumId) {
-    return await albumModel.findByIdAndDelete({_id: albumId});
+    return await albumModel.deleteOne({_id: albumId});
 }
 
 module.exports = {

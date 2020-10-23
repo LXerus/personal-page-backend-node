@@ -48,11 +48,11 @@ function updateSkill(skillId, skill) {
 function deleteSkill(skillId) {
   return new Promise(async (resolve, reject) => {
     if (skillId) {
-      const deletedPhoto = skillModel.findByIdAndDelete(skillId);
-      resolve(deletedPhoto);
+      const deletedSkill = skillModel.deleteOne({_id:skillId});
+      resolve(deletedSkill);
     }
 
-    reject("Could not delete photo");
+    reject("Could not delete skill");
   });
 }
 

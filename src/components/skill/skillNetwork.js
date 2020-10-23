@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const response = require("../../network/response");
 const skillController = require("./skillController");
-  
+const uploader = require("../../config/uploader");
+
 router.get("/", (req, res) => {
   skillController
     .getSkill(req.query.title || "")
@@ -14,7 +15,7 @@ router.get("/", (req, res) => {
     });
 });
 
-router.post("/", (req, res) => {
+router.post("/", uploader.single("image"), (req, res) => {
   skillController
     .addSkill(req.query.title || null, req.query.text || null, req.file || null)
     .then((data) => {
@@ -25,7 +26,7 @@ router.post("/", (req, res) => {
     });
 });
 
-router.patch("/:id", (req, res) => {
+router.patch("/:id", uploader.single("image"), (req, res) => {
   skillController
     .updateSkill(
       req.params.id || null,
