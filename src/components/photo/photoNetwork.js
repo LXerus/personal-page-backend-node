@@ -38,14 +38,25 @@ router.patch("/:id", uploader.single("image"), (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  photoController
-    .deletePhoto(req.params.id || null)
-    .then(() => {
-      response.success(req, res, 204);
-    })
-    .catch((error) => {
-      response.error(req, res, error, 500);
-    });
+  if (req.query.albumPhoto === "true") {
+    photoController
+      .deleteAlbumPhoto(req.params.id || null)
+      .then((data) => {
+        response.success(req, res, 204, data);
+      })
+      .catch((error) => {
+        response.error(req, res, error, 400);
+      });
+  } else {
+    photoController
+      .deletePhoto(req.params.id || null)
+      .then(() => {
+        response.success(req, res, 204);
+      })
+      .catch((error) => {
+        response.error(req, res, error, 500);
+      });
+  }
 });
 
 module.exports = router;

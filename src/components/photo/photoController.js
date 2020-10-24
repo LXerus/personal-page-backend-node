@@ -1,7 +1,9 @@
 const PhotoStorage = require("./photoStorage");
+const AlbumStorage = require("../album/albumStorage");
 const configVars = require("../../config/configVars");
 const path = require("path");
 const fs = require("fs");
+const { resolve } = require("path");
 
 function getPhotoById(id) {
   return new Promise((resolve, reject) => {
@@ -79,6 +81,17 @@ function deletePhoto(photoId) {
   });
 }
 
+function deleteAlbumPhoto(photoId) {
+  return new Promise(async (resolve, reject) => {
+    if (!photoId) {
+      reject(AlbumStorage.getAlbumByPhotoId(null));
+    }
+
+    await deletePhoto(photoId);
+    resolve(AlbumStorage.deleteAlbumPhoto(photoId));
+  });
+}
+
 async function __removeOldPhoto(photoId) {
   let existingPhoto = await PhotoStorage.getPhotoByID(photoId);
   if (existingPhoto !== 404) {
@@ -101,4 +114,5 @@ module.exports = {
   getPhoto,
   updatePhoto,
   deletePhoto,
+  deleteAlbumPhoto,
 };
