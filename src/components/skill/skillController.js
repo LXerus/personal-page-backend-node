@@ -1,6 +1,7 @@
 const skillStorage = require("./skillStorage");
 const photoController = require("../photo/photoController");
 const fs = require("fs");
+const { isValidObjectId } = require("mongoose");
 
 function getSkill(title) {
   return new Promise(async (resolve, reject) => {
@@ -22,14 +23,14 @@ function getSkill(title) {
 
       resolve(skillList);
     }
-    reject("Invalid data");
+    reject("[skillController getSkill] Invalid input params");
   });
 }
 
 function addSkill(title, text, image) {
   return new Promise(async (resolve, reject) => {
     if (!title || !text || !image) {
-      reject("Invalid input data");
+      reject("[skillController addSkill] Invalid input params");
     }
 
     const addedImage = await photoController.addPhoto(
@@ -44,8 +45,8 @@ function addSkill(title, text, image) {
 
 function updateSkill(skillId, title, text, image) {
   return new Promise(async (resolve, reject) => {
-    if (!skillId || !title || !text) {
-      reject("Invalid input data");
+    if (!skillId || !title || !text || !isValidObjectId(skillId)) {
+      reject("[skillController updateSkill] Invalid input params");
     }
 
     const existingSkill = await skillStorage.getSkillById(skillId);
@@ -66,8 +67,8 @@ function updateSkill(skillId, title, text, image) {
 
 function deleteSkill(skillId) {
   return new Promise(async (resolve, reject) => {
-    if (!skillId) {
-      reject("Invalid input data");
+    if (!skillId || !isValidObjectId(skillId)) {
+      reject("[skillController deleteSkill] Invalid input params");
     }
 
     let toBeDeleted = await skillStorage.getSkillById(skillId);

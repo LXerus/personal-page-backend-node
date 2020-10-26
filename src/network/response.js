@@ -13,7 +13,7 @@ const statusCode = {
 
 exports.success = (req, res, status = 200, message = "") => {
   let statusMessage = null;
-  if (!message || message === "") {
+  if (!message) {
     statusMessage = statusCode[status];
   }
 
@@ -25,7 +25,7 @@ exports.success = (req, res, status = 200, message = "") => {
 
 exports.error = (req, res, error, status = 500, message = "") => {
   let statusMessage = "";
-  if (!message || message === "") {
+  if (!message) {
     statusMessage = statusCode[status];
   }
   res.status(status).send({

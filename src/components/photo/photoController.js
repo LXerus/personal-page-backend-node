@@ -1,14 +1,14 @@
 const PhotoStorage = require("./photoStorage");
 const AlbumStorage = require("../album/albumStorage");
+const CarouselStorage = require("../carousel/carouselStorage");
 const configVars = require("../../config/configVars");
 const path = require("path");
 const fs = require("fs");
-const { resolve } = require("path");
 
 function getPhotoById(id) {
   return new Promise((resolve, reject) => {
     if (!id) {
-      reject("Invalid input data");
+      reject("[photoController getPhotoById] Invalid input data");
     }
 
     resolve(PhotoStorage.getPhotoByID(id));
@@ -20,14 +20,14 @@ function getPhoto(photoName) {
     if (photoName !== null) {
       resolve(PhotoStorage.getPhoto(photoName));
     }
-    reject("Invalid data");
+    reject("[photoController getPhoto] Invalid input data");
   });
 }
 
 function addPhoto(title, photo, id = null) {
   return new Promise((resolve, reject) => {
     if (!title || !photo) {
-      reject("Invalid input data");
+      reject("[photoController addPhoto] Invalid input data");
     }
 
     const url = `${configVars.host}:${configVars.port}/${path.join(
@@ -49,7 +49,7 @@ function addPhoto(title, photo, id = null) {
 function updatePhoto(photoId, title, photo) {
   return new Promise(async (resolve, reject) => {
     if (!photoId || title === "" || !photo) {
-      reject("Invalid photo data, id or new data missing");
+      reject("[photoController updatePhoto] Invalid input data");
     }
 
     if ((await __removeOldPhoto(photoId)) === 404) {
@@ -68,13 +68,13 @@ function updatePhoto(photoId, title, photo) {
 function deletePhoto(photoId) {
   return new Promise(async (resolve, reject) => {
     if (!photoId) {
-      reject("Invalid data, Id missing");
+      reject("[photoController deletePhoto] Invalid input data");
     }
 
     try {
       await __removeOldPhoto(photoId);
     } catch (error) {
-      reject("[photo] 404 Not found", error);
+      reject("[photoController deletePhoto] 404 Not found", error);
     }
 
     resolve(PhotoStorage.deletePhoto(photoId));
@@ -89,6 +89,17 @@ function deleteAlbumPhoto(photoId) {
 
     await deletePhoto(photoId);
     resolve(AlbumStorage.deleteAlbumPhoto(photoId));
+  });
+}
+
+function deleteCarouselPhoto(photoId) {
+  return new Promise(async (resolve, reject) => {
+    if (!photoId) {
+      reject("[photoController deleteCarouselPhoto] invalid input params");
+    }
+
+    await deletePhoto(photoId);
+    resolve(CarouselStorage.deleteCarouselPhoto(photoId));
   });
 }
 
@@ -115,4 +126,5 @@ module.exports = {
   updatePhoto,
   deletePhoto,
   deleteAlbumPhoto,
+  deleteCarouselPhoto,
 };

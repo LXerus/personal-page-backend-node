@@ -1,52 +1,69 @@
-const albumStorage = require("./albumStorage");
-const photoController = require("../photo/photoController");
+const AlbumStorage = require("./albumStorage");
+const PhotoController = require("../photo/photoController");
 const fs = require("fs");
+const { isValidObjectId } = require("mongoose");
 
 function getAlbums(albumName) {
   return new Promise((resolve, reject) => {
     if (albumName || albumName === "") {
-      resolve(albumStorage.getAlbum(albumName));
+      resolve(AlbumStorage.getAlbum(albumName));
     }
 
-    reject("Invalid input data");
+    reject("[albumController getAlbums] Invalid input data");
   });
 }
 
-function addAlbum(title, description, images) {
+function addAlbum(title, description, photos) {
   return new Promise(async (resolve, reject) => {
-    let imageIds = [];
-    let imageList = [];
+    let photoIds = [];
+    let photoList = [];
 
     if (!title) {
-      reject("Invalid input data");
+      reject("[albumController addAlbum] Invalid input data");
     }
 
-    for (let image of images) {
-      const addedImage = await photoController.addPhoto(
-        image.originalname,
-        image
+    for (let photo of photos) {
+      const addedPhoto = await PhotoController.addPhoto(
+        photo.originalname,
+        photo
       );
-      imageList.push(addedImage);
+      photoList.push(addedPhoto);
     }
 
-    for (let image of imageList) {
-      imageIds.push(image._id);
+    for (let photo of photoList) {
+      photoIds.push(photo._id);
     }
 
     const newAlbum = {
       title: title,
       description: description,
-      photos: imageIds,
+      photos: photoIds,
     };
 
-    resolve(albumStorage.addAlbum(newAlbum));
+    resolve(AlbumStorage.addAlbum(newAlbum));
+  });
+}
+
+function addAlbumPhoto(albumId, photo) {
+  return new Promise(async (resolve, reject) => {
+    if (!albumId || !isValidObjectId(albumId) || !photo) {
+      reject("[albumController addAlbumPhoto] invalid input params");
+    }
+
+    const addedPhoto = await PhotoController.addPhoto(
+      photo.originalname,
+      photo
+    );
+    resolve(
+      AlbumStorage.updateAlbum(albumId, { $push: { photos: [addedPhoto._id] } })
+    );
   });
 }
 
 function updateAlbum(albumId, title) {
   return new Promise((resolve, reject) => {
-    if (!albumId || !title) {
-      reject("Invalid input data");
+    if (!albumId || !isValidObjectId(albumId) || !title) {
+      reject("[albumController updateAlbum] invalid input params");
     }
 
     let newAlbum = {};
@@ -57,23 +74,24 @@ function updateAlbum(albumId, title) {
       newAlbum = { title: title };
     }
 
-    resolve(albumStorage.updateAlbum(albumId, newAlbum));
+    resolve(AlbumStorage.updateAlbum(albumId, newAlbum));
   });
 }
 
 function deleteAlbum(albumId) {
   return new Promise((resolve, reject) => {
-    if (!albumId) {
-      reject("Invalid input data");
+    if (!albumId || !isValidObjectId(albumId)) {
+      reject("[albumController deleteAlbum] invalid input params");
     }
 
-    resolve(albumStorage.deleteAlbum(albumId));
+    resolve(AlbumStorage.deleteAlbum(albumId));
   });
 }
 
 module.exports = {
   getAlbums,
   addAlbum,
+  addAlbumPhoto,
   updateAlbum,
   deleteAlbum,
 };

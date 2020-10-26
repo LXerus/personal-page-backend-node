@@ -1,3 +1,4 @@
+const { isValidObjectId } = require("mongoose");
 const AlbumModel = require("./albumModel");
 
 async function getAlbumByID(albumId) {
@@ -23,8 +24,8 @@ function getAlbum(albumName) {
   });
 }
 async function getAlbumByPhotoId(phptoId) {
-  if (!phptoId) {
-    return "[albumStorage] Invalid input data";
+  if (!phptoId || !isValidObjectId(phptoId)) {
+    return "[albumStorage getAlbumByPhotoId] Invalid input params";
   }
   const albums = await AlbumModel.find({ photos: { $in: [phptoId] } });
   return albums;
@@ -38,23 +39,31 @@ async function addAlbum(album) {
 
 function updateAlbum(albumId, album) {
   return new Promise(async (resolve, reject) => {
-    if (albumId) {
-      const updatedAlbum = await AlbumModel.findByIdAndUpdate(albumId, album);
-      resolve(updatedAlbum);
+    if (!albumId || !isValidObjectId(albumId)) {
+      reject("[albumStorage updateAlbum] Invalid input params");
     }
-
-    reject("Could not update album");
+    const updatedAlbum = await AlbumModel.findByIdAndUpdate(albumId, album);
+    resolve(updatedAlbum);
   });
 }
 
 async function deleteAlbum(albumId) {
-  return await AlbumModel.deleteOne({ _id: albumId });
+  return new Promise(async (resolve, reject) => {
+    if (!albumId || !isValidObjectId(albumId)) {
+      reject("[albumStorage deleteAlbum] Invalid input params");
+    }
+    resolve(AlbumModel.deleteOne({ _id: albumId }));
+  });
 }
 
 async function deleteAlbumPhoto(phptoId) {
+  if (!albumId || !isValidObjectId(phptoId)) {
+    return "[albumStorage deleteAlbumPhoto] Invalid input params";
+  }
+
   await AlbumModel.updateOne(
     {},
-    { $pull: { photos: {$in: [phptoId]} } },
+    { $pull: { photos: { $in: [phptoId] } } },
     { multi: true }
   );
 }

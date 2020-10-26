@@ -1,3 +1,4 @@
+const { isValidObjectId } = require("mongoose");
 const skillModel = require("./skillModel");
 
 async function getSkillById(skillId) {
@@ -22,7 +23,7 @@ function getSkill(photoTitle) {
     }
 
     if (skills.length === 0) {
-      reject("No matching results");
+      reject("[skillStorage getSkill] No matching results");
     }
 
     resolve(skills);
@@ -36,23 +37,21 @@ function addSkill(skill) {
 
 function updateSkill(skillId, skill) {
   return new Promise(async (resolve, reject) => {
-    if (skillId) {
-      const updatedSkill = await skillModel.findByIdAndUpdate(skillId, skill);
-      resolve(updatedSkill);
+    if (!skillId || !isValidObjectId(skillId)) {
+      reject("[skillStorage getSkill] invalid input params");
     }
-
-    reject("Could not update photo");
+    const updatedSkill = await skillModel.findByIdAndUpdate(skillId, skill);
+    resolve(updatedSkill);
   });
 }
 
 function deleteSkill(skillId) {
   return new Promise(async (resolve, reject) => {
-    if (skillId) {
-      const deletedSkill = skillModel.deleteOne({_id:skillId});
-      resolve(deletedSkill);
+    if (!skillId || !isValidObjectId(skillId)) {
+      reject("[skillStorage getSkill] invalid input params");
     }
-
-    reject("Could not delete skill");
+    const deletedSkill = skillModel.deleteOne({ _id: skillId });
+    resolve(deletedSkill);
   });
 }
 

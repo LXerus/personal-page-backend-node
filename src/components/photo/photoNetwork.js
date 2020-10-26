@@ -38,25 +38,36 @@ router.patch("/:id", uploader.single("image"), (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  if (req.query.albumPhoto === "true") {
-    photoController
-      .deleteAlbumPhoto(req.params.id || null)
-      .then((data) => {
-        response.success(req, res, 204, data);
-      })
-      .catch((error) => {
-        response.error(req, res, error, 400);
-      });
-  } else {
-    photoController
-      .deletePhoto(req.params.id || null)
-      .then(() => {
-        response.success(req, res, 204);
-      })
-      .catch((error) => {
-        response.error(req, res, error, 500);
-      });
-  }
+  photoController
+    .deletePhoto(req.params.id || null)
+    .then(() => {
+      response.success(req, res, 204);
+    })
+    .catch((error) => {
+      response.error(req, res, error, 500);
+    });
+});
+
+router.delete("/album/:id", (req, res) => {
+  photoController
+    .deleteAlbumPhoto(req.params.id || null)
+    .then((data) => {
+      response.success(req, res, 204, data);
+    })
+    .catch((error) => {
+      response.error(req, res, error, 400);
+    });
+});
+
+router.delete("/carousel/:id", (req, res) => {
+  photoController
+    .deleteCarouselPhoto(req.params.id || null)
+    .then((data) => {
+      response.success(req, res, 204, data);
+    })
+    .catch((error) => {
+      response.error(req, res, error, 400);
+    });
 });
 
 module.exports = router;

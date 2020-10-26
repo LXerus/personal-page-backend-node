@@ -1,4 +1,3 @@
-const { resolve } = require("path");
 const PhotoModel = require("./photoModel");
 
 async function getPhotoByID(photoId) {
@@ -24,15 +23,19 @@ function getPhoto(photoName) {
   });
 }
 
-function addPhoto(photo, returnPhoto = false) {
+function addPhoto(photo) {
   return new Promise((resolve, reject) => {
     if (!photo) {
-      reject("could not add photo");
+      reject("[photoStorage addPhoto] invalid input params");
     }
 
-    const newPhoto = new PhotoModel(photo);
-    newPhoto.save();
-    resolve(newPhoto);
+    try {
+      const newPhoto = new PhotoModel(photo);
+      newPhoto.save();
+      resolve(newPhoto);
+    } catch (error) {
+      reject("[photoStorage addPhoto] invalid input params" + error);
+    }
   });
 }
 
@@ -44,18 +47,18 @@ function updatePhoto(photoId, photo) {
       });
       resolve(updatedPhoto);
     }
-    reject("Could not update photo");
+    reject("[photoStorage updatePhoto] invalid input params");
   });
 }
 
 function deletePhoto(photoId) {
   return new Promise(async (resolve, reject) => {
     if (photoId) {
-      const deletedPhoto = PhotoModel.deleteOne({_id:photoId});
+      const deletedPhoto = PhotoModel.deleteOne({ _id: photoId });
       resolve(deletedPhoto);
     }
 
-    reject("Could not delete photo");
+    reject("[photoStorage updatePhoto] invalid input params");
   });
 }
 
